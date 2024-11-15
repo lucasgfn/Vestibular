@@ -1,5 +1,3 @@
-# Vestibular
-
 # Trabalho desenvolvido na Matéria de Algoritmo e Estrutura de Dados
 
 O vestibular de verão da Udesc está se aproximando. O processo seletivo será realizado por meio de
