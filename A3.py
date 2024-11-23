@@ -16,21 +16,21 @@ class Vestibular:
     def pontuacao(self, v, color):
         """
         Calcula a pontuação de um vértice considerando o número de vizinhos
-        que já têm tipo de prova atribuído.
+        que ainda não têm tipo de prova atribuído.
 
         Args:
         - v: O vértice cuja pontuação será calculada.
         - color: Lista que indica o tipo de prova atribuído a cada vértice (ou -1 se não atribuído).
 
         Returns:
-        - Pontuação do vértice (número de vizinhos com tipo de prova atribuído).
+        - Pontuação do vértice (número de vizinhos sem tipo de prova atribuído).
         """
-        return sum(1 for u in range(self.num_vertices) if self.grafo[v][u] == 1 and color[u] != -1)
+        return sum(1 for u in range(self.num_vertices) if self.grafo[v][u] == 1 and color[u] == -1)
 
-    def greedy_color_by_rank2(self):
+    def greedy_color_by_rank3(self):
         """
         Aplica a coloração gulosa considerando os vértices em ordem de pontuação dinâmica,
-        baseada no número de vizinhos com prova atribuída.
+        baseada no número de vizinhos sem prova atribuída.
         """
         # Inicializa a lista de cores com -1 (não colorido)
         color = [-1] * self.num_vertices
