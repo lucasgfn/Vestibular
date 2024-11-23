@@ -1,15 +1,16 @@
-from A1 import A1
+from A1 import Vestibular
+from A2 import Vestibular
+#from A3 import Vestibular
 from Instances import Instances
 
 if __name__ == "__main__":
     instance = Instances("salas/sala1.txt")
 
-    g = A1(instance.num_vertices)
-
+    g = Vestibular(instance.num_vertices)
     for u, v in instance.edges:
         g.addEdge(u, v)
 
-    colors = g.greedy_color_by_degree()
+    colors = g.greedy_color_by_rank2()
     num_types = g.get_num_color_used(colors)
 
     print("Tipos de prova atribuídos a cada mesa:", colors)
