@@ -1,4 +1,8 @@
-class Vestibular:
+from Instances import Instances
+
+
+class A3:
+
     def __init__(self, num_vertices):
         self.num_vertices = num_vertices
         self.grafo = [[0] * num_vertices for _ in range(num_vertices)]
@@ -27,7 +31,7 @@ class Vestibular:
         """
         return sum(1 for u in range(self.num_vertices) if self.grafo[v][u] == 1 and color[u] == -1)
 
-    def greedy_color_by_rank3(self):
+    def greedy_color_by_rank(self):
         """
         Aplica a coloração gulosa considerando os vértices em ordem de pontuação dinâmica,
         baseada no número de vizinhos sem prova atribuída.
@@ -78,3 +82,26 @@ class Vestibular:
                 if self.grafo[u][v] == 1 and colors[u] == colors[v]:
                     print(f"Vértices {u} e {v} têm a mesma cor ({colors[u]})!")
         return True
+
+    def main(self, filename):
+            print(f"Executando o algoritmo de coloração para o arquivo {filename}...")
+            instance = Instances(filename)
+
+            g = A3(instance.num_vertices)
+            for u, v in instance.edges:
+                g.addEdge(u, v)
+
+            colors = g.greedy_color_by_rank()
+            num_types = g.get_num_color_used(colors)
+
+            print("Tipos de prova atribuídos a cada mesa:", colors)
+            print("Quantidade de tipos de prova usados:", num_types)
+
+            if g.verificar_vizinhos_com_mesma_cor(colors):
+                 print("Todos os vizinhos têm cores diferentes.")
+            else:
+                print("Alguns vizinhos têm a mesma cor.")
+
+if __name__ == "__main__":
+    a3_instance = A3(0)
+    a3_instance.main("salas/sala1.txt")
