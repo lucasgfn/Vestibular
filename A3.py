@@ -1,4 +1,6 @@
 from Instances import Instances
+import sys
+
 class A3:
 
     def __init__(self, num_vertices):
@@ -67,7 +69,11 @@ class A3:
                  print("Todos os vizinhos têm cores diferentes.")
             else:
                 print("Alguns vizinhos têm a mesma cor.")
-
 if __name__ == "__main__":
-    a3_instance = A3(0)
-    a3_instance.main("salas/sala1.txt")
+    if len(sys.argv) != 2:
+        print("Uso incorreto. Passe o arquivo de entrada como parâmetro.")
+        sys.exit(1)
+
+    filename = sys.argv[1]
+    a2_instance = A3(0)
+    a2_instance.main(filename)

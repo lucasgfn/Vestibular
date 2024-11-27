@@ -1,4 +1,6 @@
 from Instances import Instances
+import sys
+
 class A1:
 
     def __init__(self, num_vertices):
@@ -24,18 +26,19 @@ class A1:
         # Inicializa as cores
         cores = [-1] * self.num_vertices
 
+        # Lista de pontuações e ordenação inicial
+        pontuacoes = [(v, self.pontuacao(v)) for v in vertices_nao_coloridos]
+        pontuacoes.sort(key=lambda x: x[1], reverse=True)
+
+        # Enquanto houver vértices não coloridos
         while vertices_nao_coloridos:
-            # Recalcula a o grau de cada vértice não colorido --> Lista de compreensão que armazena vertice e pontuacao
-            pontuacoes = [(v, self.pontuacao(v)) for v in vertices_nao_coloridos]
+            # Seleciona o vértice com maior pontuação (primeiro da lista ordenada)
+            v = pontuacoes.pop(0)[0]  # Pega o vértice com maior pontuação
 
-            # Ordenação com Timsort --> Pior Caso O(n log n)
-            pontuacoes.sort(key=lambda x: x[1], reverse=True)
+            # Encontra os tipos de cores já atribuídos aos vizinhos
+            vizinhos = [cores[u] for u in range(self.num_vertices) if self.grafo[v][u] == 1]
 
-            # Seleciona o vértice com maior grau porque esta sorted
-            v = pontuacoes[0][0]
-
-            # Encontra o primeiro tipo de prova não atribuído aos vizinhos --> vertices u vizinhos de v
-            vizinhos = [cores[u] for u in range(self.num_vertices) if self.grafo[v][u] == 1]    #indica a existencia de um vertice na MatrizAdj
+            # Atribui a menor cor disponível ao vértice v
             for tipo in range(self.num_vertices):
                 if tipo not in vizinhos:
                     cores[v] = tipo
@@ -44,8 +47,9 @@ class A1:
             # Remove o vértice v de V0 (não coloridos)
             vertices_nao_coloridos.remove(v)
 
-            # Recalcula novamente as pontuações dos vértices restantes
-            pontuacoes = [(v, self.pontuacao(v)) for v in vertices_nao_coloridos]
+            # Atualiza a lista de pontuações removendo o vértice v
+            pontuacoes = [(u, self.pontuacao(u)) for u in vertices_nao_coloridos]
+            pontuacoes.sort(key=lambda x: x[1], reverse=True)
 
         return cores
 
@@ -82,5 +86,10 @@ class A1:
            print("Alguns vizinhos têm a mesma cor.")
 
 if __name__ == "__main__":
-    a1_instance = A1(0)
-    a1_instance.main("salas/sala1.txt")
+    if len(sys.argv) != 2:
+        print("Uso incorreto. Passe o arquivo de entrada como parâmetro.")
+        sys.exit(1)
+
+    filename = sys.argv[1]
+    a2_instance = A1(0)
+    a2_instance.main(filename)
