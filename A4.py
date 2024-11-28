@@ -1,4 +1,5 @@
 import sys
+import random
 from Instances import Instances
 
 class A4:
@@ -21,6 +22,7 @@ class A4:
         vertices_nao_coloridos = set(range(self.num_vertices))
 
         while vertices_nao_coloridos:
+            # Diversificação: escolha aleatória entre os vértices com maior grau
             pontuacoes = [(v, self.pontuacao(v, color)) for v in vertices_nao_coloridos]
             maxPontuacao = max(pontuacoes, key=lambda x: x[1])[0]
 
@@ -54,6 +56,7 @@ class A4:
 
         for _ in range(max_iter):
             colors = self.greedy_color()
+
             # Busca local para melhorar a solução
             colors = self.local_search(colors)
 
@@ -65,7 +68,6 @@ class A4:
         return best_colors
 
     def pode_recolorir(self, v, nova_cor, colors):
-        # Verifica se podemos recolorir v para nova_cor sem criar conflitos
         for u in range(self.num_vertices):
             if self.grafo[v][u] == 1 and colors[u] == nova_cor:
                 return False
@@ -77,7 +79,9 @@ class A4:
             melhorou = False
             cores_usadas_antes = len(set(colors))
 
-            for v in range(self.num_vertices):
+            # Tentativa de recolorir múltiplos vértices simultaneamente
+            vertices_para_recolorir = random.sample(range(self.num_vertices), len(colors)//3)  # Recolorir 1/3 dos vértices
+            for v in vertices_para_recolorir:
                 for nova_cor in range(max(colors) + 1):
                     if nova_cor != colors[v] and self.pode_recolorir(v, nova_cor, colors):
                         colors[v] = nova_cor
@@ -92,7 +96,6 @@ class A4:
                     melhorou = True
                     break  # Ajuste uma cor por iteração
 
-            # Verificar se houve melhoria real
             if len(set(colors)) == cores_usadas_antes:
                 melhorou = False
 
@@ -113,7 +116,7 @@ class A4:
         print(f"Quantidade de tipos de prova usados (inicial): {num_types_initial}")
 
         # Aplica o GRASP para otimizar a quantidade de provas
-        colors = g.grasp(max_iter=100)
+        colors = g.grasp(max_iter=200)  # Aumentei o número de iterações
         num_types_after = g.get_num_color_used(colors)
 
         print("Resultado após GRASP:", colors)
