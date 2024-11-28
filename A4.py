@@ -1,6 +1,5 @@
 import sys
 from Instances import Instances
-import random
 
 class A4:
     def __init__(self, num_vertices):
@@ -49,13 +48,12 @@ class A4:
     def get_num_color_used(self, colors):
         return max(colors) + 1 if colors else 0
 
-    def grasp(self, max_iter=100, alpha=0.5):
+    def grasp(self, max_iter=100):
         best_colors = None
         best_num_colors = float('inf')
 
         for _ in range(max_iter):
-            # Geração da solução inicial com a fase greedy randomizada
-            colors = self.grasp_phase(alpha)
+            colors = self.greedy_color()
             # Busca local para melhorar a solução
             colors = self.local_search(colors)
 
@@ -66,48 +64,39 @@ class A4:
 
         return best_colors
 
-    def grasp_phase(self, alpha):
-        # Inicializa a coloração com -1 (sem cor)
-        colors = [-1] * self.num_vertices
-        available_colors = set(range(self.num_vertices))
-
-        # Fase Greedy Randomizada
-        for v in range(self.num_vertices):
-            # Verifica quais cores estão disponíveis para o vértice
-            used_colors = set()
-            for u in range(self.num_vertices):
-                if self.grafo[v][u] == 1 and colors[u] != -1:
-                    used_colors.add(colors[u])
-
-            available = available_colors - used_colors
-            if available:
-                # Seleciona uma cor aleatória dentro do conjunto de cores disponíveis
-                restricted_set = list(available)
-                num_choices = max(1, int(len(restricted_set) * alpha))
-                random_choice = random.choice(restricted_set[:num_choices])
-                colors[v] = random_choice
-
-        return colors
-
-    def local_search(self, colors):
-        melhorou = True
-        while melhorou:
-            melhorou = False
-            for v in range(self.num_vertices):
-                # Tentar recolorir o vértice v para uma cor mais baixa, sem criar conflitos
-                for nova_cor in range(colors[v]):
-                    if self.pode_recolorir(v, nova_cor, colors):
-                        colors[v] = nova_cor
-                        melhorou = True
-                        break
-        return colors
-
     def pode_recolorir(self, v, nova_cor, colors):
         # Verifica se podemos recolorir v para nova_cor sem criar conflitos
         for u in range(self.num_vertices):
             if self.grafo[v][u] == 1 and colors[u] == nova_cor:
                 return False
         return True
+
+    def local_search(self, colors):
+        melhorou = True
+        while melhorou:
+            melhorou = False
+            cores_usadas_antes = len(set(colors))
+
+            for v in range(self.num_vertices):
+                for nova_cor in range(max(colors) + 1):
+                    if nova_cor != colors[v] and self.pode_recolorir(v, nova_cor, colors):
+                        colors[v] = nova_cor
+                        melhorou = True
+                        break
+
+            # Reduzir número de cores usadas
+            cores_usadas = sorted(set(colors))
+            for antiga_cor in cores_usadas:
+                if all(colors[v] != antiga_cor for v in range(self.num_vertices)):
+                    colors = [c if c < antiga_cor else c - 1 for c in colors]
+                    melhorou = True
+                    break  # Ajuste uma cor por iteração
+
+            # Verificar se houve melhoria real
+            if len(set(colors)) == cores_usadas_antes:
+                melhorou = False
+
+        return colors
 
     def main(self, filename):
         print(f"Executando o algoritmo de coloração para o arquivo {filename}...")
@@ -124,7 +113,7 @@ class A4:
         print(f"Quantidade de tipos de prova usados (inicial): {num_types_initial}")
 
         # Aplica o GRASP para otimizar a quantidade de provas
-        colors = g.grasp(max_iter=1000, alpha=0.5)
+        colors = g.grasp(max_iter=100)
         num_types_after = g.get_num_color_used(colors)
 
         print("Resultado após GRASP:", colors)
@@ -141,6 +130,6 @@ if __name__ == "__main__":
         print("Uso incorreto. Passe o arquivo de entrada como parâmetro.")
         sys.exit(1)
 
-    filename = sys.argv[1]  # O primeiro argumento será o nome do arquivo
+    filename = sys.argv[1]
     a2_instance = A4(0)
     a2_instance.main(filename)
