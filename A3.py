@@ -52,7 +52,7 @@ class A3:
         return True
 
     def main(self, filename):
-            print(f"Executando o algoritmo de coloração para o arquivo {filename}...")
+            #print(f"Executando o algoritmo de coloração para o arquivo {filename}...")
             instance = Instances(filename)
 
             g = A3(instance.num_vertices)
@@ -62,13 +62,9 @@ class A3:
             colors = g.greedy_color()
             num_types = g.get_num_color_used(colors)
 
-            print("Tipos de prova atribuídos a cada mesa:", colors)
-            print("Quantidade de tipos de prova usados:", num_types)
+            #print("Tipos de prova atribuídos a cada mesa:", colors)
+            print(num_types)
 
-            if g.verificar_vizinhos_com_mesma_cor(colors):
-                 print("Todos os vizinhos têm cores diferentes.")
-            else:
-                print("Alguns vizinhos têm a mesma cor.")
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Uso incorreto. Passe o arquivo de entrada como parâmetro.")
